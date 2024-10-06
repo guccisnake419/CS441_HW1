@@ -2,7 +2,6 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
@@ -14,6 +13,19 @@ target/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.idea/.name
+.idea/artifacts/
+.idea/codeStyles/
+.idea/misc.xml
+.idea/sbt.xml
+.idea/scala_compiler.xml
+.idea/scala_settings.xml
+.idea/vcs.xml
+src/main/resources/META-INF/
+src/main/resources/output/
+src/main/scala/target/
+src/main/scala/project/
+
 
 ### Eclipse ###
 .apt_generated
