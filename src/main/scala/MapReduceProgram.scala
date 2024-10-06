@@ -43,9 +43,9 @@ object MapReduceProgram extends Configured with Tool {
       .build()
     maplogger.info("Training Word2Vec model...")
     try {
-      word2Vec.fit()
+      word2Vec.fit() //train model
     } catch {
-      case p: IllegalStateException => {
+      case p: IllegalStateException => {  //incase an exception is thrown
         maplogger.error(p.getMessage + " for sentence: " + sentence)
         return None
       }
@@ -66,13 +66,13 @@ object MapReduceProgram extends Configured with Tool {
       if (line.equals(" ") || line.equals("")) {
         return
       }
-      val vec = word2VecBuilder(line)
+      val vec = word2VecBuilder(line) //inisialize word2vec model
       if (vec == None) {
         return
       }
       val vocab = vec.get.vocab().words().asScala
-      vocab.foreach(token =>{
-        val vector = vec.get.getWordVector(token) ++ Array(1.0)
+      vocab.foreach(token =>{ //iterate through all the words 
+        val vector = vec.get.getWordVector(token) ++ Array(1.0) //get embeddings and append frequency of 1 to it 
         word.set(token)
         output.collect(word, new TextArrayWritable(vector.map(x => x.toString)))}
       )
@@ -83,10 +83,10 @@ object MapReduceProgram extends Configured with Tool {
     override def reduce(key: Text, values: util.Iterator[TextArrayWritable], output: OutputCollector[Text, Text], reporter: Reporter): Unit = {
       reducelogger.info("Starting Reduce job for key: " + key.toString)
       val embeddings = values.asScala.toList
-      val summedEmbedding = embeddings.map(_.get().map(_.toString.toDouble).init)
-        .reduce((vec1, vec2) => vec1.zip(vec2).map { case (v1, v2) => v1 + v2 })
-      val totalFrequency = embeddings.map(_.get().last.toString.toDouble).sum
-      val averagedEmbedding = summedEmbedding.map(_ / totalFrequency)
+      val summedEmbedding = embeddings.map(_.get().map(_.toString.toDouble).init) 
+        .reduce((vec1, vec2) => vec1.zip(vec2).map { case (v1, v2) => v1 + v2 }) //extract embedding and add to eachothet
+      val totalFrequency = embeddings.map(_.get().last.toString.toDouble).sum //extract frequency and sum
+      val averagedEmbedding = summedEmbedding.map(_ / totalFrequency) 
       val resultArray = averagedEmbedding.map(_.toString) ++ Array(totalFrequency.toString)
       output.collect(key, new Text("Average Embeddings: " + averagedEmbedding.map(x => x.toString).mkString("Array(", ", ", ")") + "   \nCount: " + totalFrequency))
 
